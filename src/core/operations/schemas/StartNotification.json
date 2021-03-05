@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "StartNotificationRequest",
+  "type": "object",
+  "properties": {
+    "beaconSerialNumber": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "iccid": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "imsi": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "firmwareVersion": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "vehicleVIN": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "vehicleLicensePlate": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "vehicleBrand": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "vehicleModel": {
+      "type": "string",
+      "maxLength": 50
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "vehicleLicensePlate",
+    "vehicleBrand"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "StartNotificationResponse",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "Accepted",
+        "Pending",
+        "Rejected"
+      ]
+    },
+    "currentTime": {
+      "type": "string",
+      "format": "date-time",
+      "formatMinimum": "1970-01-01T00:00:00.000"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "currentTime",
+    "status"
+  ]
+}

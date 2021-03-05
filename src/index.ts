@@ -1,36 +1,15 @@
-/* Non-SSL is simply App() */
-import {DEDICATED_COMPRESSOR_3KB, HttpRequest, HttpResponse, WebSocket} from "uWebSockets.js";
-import Clients from './Clients'
+// TODO
+// [X] Make ATP Central System boilerplate / 2
+// [ ] Make cache for beacons              / 5
+// [ ] Make schemas for ATP                / 3
+// [ ] Make scheme validator               / 5
 
-const clients = new Clients();
-require('uWebSockets.js').App().ws('/*', {
+import CentralSystem from './core/CentralSystem';
 
-    /* There are many common helper features */
-    idleTimeout: 30,
-    maxBackpressure: 1024,
-    maxPayloadLength: 512,
-    compression: DEDICATED_COMPRESSOR_3KB,
-
-    open: (ws: WebSocket) => {
-    },
-    /* For brevity we skip the other events (upgrade, open, ping, pong, close) */
-    message: (ws: WebSocket, message: ArrayBuffer, isBinary: boolean) => {
-        /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
-        /* Here we echo the message back, using compression if available */
-        clients.addClient(ws, ws);
-        console.log(clients.getClient(ws));
-        let ok = ws.send(message, isBinary, true);
+const centralSystem = new CentralSystem({
+    validateConnection: (url: any) => {
+        // check if CS name in DB
+        return true;
     }
-
-}).get('/*', (res: HttpResponse, req: HttpRequest) => {
-
-    /* It does Http as well */
-    res.writeStatus('200 OK').writeHeader('IsExample', 'Yes').end('Hello there!');
-
-}).listen(9001, (listenSocket: any) => {
-
-    if (listenSocket) {
-        console.log('Listening to port 9001');
-    }
-
 });
+centralSystem.listen();
