@@ -12,7 +12,9 @@
       "enum": [
         "km",
         "m"
-      ],
+      ]
+    },
+    "position": {
       "items": [
         {
           "type": "string"

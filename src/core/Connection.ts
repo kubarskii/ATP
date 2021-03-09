@@ -47,7 +47,8 @@ export default class Connection {
                     const operation: any = new Operations[operationName](payload);
                     const response = await operation.generatePayload();
                     const validatedResponsePayload = operation.createResponse(response);
-                    //console.log(getObjectValues(validatedResponsePayload));
+                    console.log(getObjectValues(validatedResponsePayload));
+                    this.ws.send(JSON.stringify([ 3, id, getObjectValues(validatedResponsePayload) ]))
                     break;
                 default: {
                     console.log('default action');

@@ -157,7 +157,7 @@ Another function of the heartbeat is to check whether the connection is still al
 
 ## 9. Operations initiated by Central System
 
-### 9.1. Vehicle Status
+### 9.1. Beacon Status
 
 TBD;
 
