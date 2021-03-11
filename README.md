@@ -137,10 +137,11 @@ Bcn example:
 ```javascript
 [2, id, 'Heartbeat', {
     speed: '',
-    position: ['', ''], // latitude and longitude
-    noSpeed: false,     // default,
-    currentTime: '',           // GMT time ISOString
+    position: ['', ''],   // latitude and longitude
+    noSpeed: false,       // default,
+    currentTime: '',      // GMT time ISOString
     previousTime: '',
+    previousPosition: '',
     systemOfMeasures: '',
 }]
 ```
@@ -155,6 +156,12 @@ CS example:
 
 Another function of the heartbeat is to check whether the connection is still alive or not.
 
+### 8.3. SendNotification
+
+TBD;
+
+Replace heartbeat with sendNotification.
+
 ## 9. Operations initiated by Central System
 
 ### 9.1. Beacon Status
@@ -166,11 +173,31 @@ speed, mileage, ignition off/on, fuel left, etc.
 
 ### 9.2. Reset
 
-TBD;
+The operation is intended to be used to reset the bcn if something goes wrong. The reset can be *hard* or *soft*.
+
+- Hard reset - reset without saving current session, closing ws connection properly.
+- Soft reset - close ws connection, save current session and reload. Reset type: Hard, Soft
+
+Request example:
+
+```javascript
+[2, id, 'Reset', {type: 'soft'}]
+```
+
+Response example:
+
+```javascript
+[3, id, {status: 'Accespted'}]
+```
 
 ## 10. Sequence of the beacon initialization
 
-TBD; // Add sequence diagram
+TBD; // Add sequence diagram image
+
+- Create StartNotifcation
+    - server response with status, time and interval
+- Start heartbeat by interval with payload
+    - server response with status
 
 ## 11. Errors
 

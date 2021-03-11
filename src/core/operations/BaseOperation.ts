@@ -1,4 +1,4 @@
-import {Operation} from "../interfaces/operation.interface";
+import {Operation} from "../../interfaces/operation.interface";
 import validateAndApplyProperties from "../../utils/validateAndApplyProperties";
 
 const RESPONSE_SCHEMA_SYMBOL = Symbol('responseSchema');

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "StartNotificationRequest",
+  "title": "HeartbeatRequest",
   "type": "object",
   "properties": {
     "speed": {
@@ -15,6 +15,18 @@
       ]
     },
     "position": {
+      "items": [
+        {
+          "type": "string",
+          "maxLength": 20
+        },
+        {
+          "type": "string",
+          "maxLength": 20
+        }
+      ]
+    },
+    "previousPosition": {
       "items": [
         {
           "type": "string"
@@ -42,6 +54,7 @@
   "required": [
     "systemOfMeasures",
     "position",
+    "previousPosition",
     "currentTime",
     "previousTime"
   ]
