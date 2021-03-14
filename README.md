@@ -1,4 +1,27 @@
-# ATP (Auto tracker protocol)
+# Starting the project
+
+Prerequisites:
+
+Node.js and npm should be installed.
+
+To start the project:
+
+- run in terminal `npm i` to install dependencies;
+- add `.env` file to the project root;
+    - add all env variables to the `.env`. Currently it is used to connect to the *Firebase*;
+- run `npm run start` to start sever locally;
+
+# Schemas
+
+Schemas are used to verify requests and responses produced by client/server and adhere AT-protocol. Schemas can be found
+in:
+`src/core/operations/schemas`
+
+# Emulator
+
+TBD;
+
+# ATP (Auto tracker protocol) description
 
 ## 1. Scope
 
@@ -156,11 +179,30 @@ CS example:
 
 Another function of the heartbeat is to check whether the connection is still alive or not.
 
-### 8.3. SendNotification
+### 8.3. EmergencyNotification
 
-TBD;
+This request is intended to be used in emergency situations. It can be used if an accident or similar happened.
 
-Replace heartbeat with sendNotification.
+Possible situations:
+
+- Accident
+- Speed limits noncompliance
+- Fuel leak
+
+Request example:
+
+```javascript
+[2, id, 'EmergencyNotification', {
+    type: 'Accident',
+    data: {} // any data
+}] 
+```
+
+Response example:
+
+```javascript
+[3, id, {status: 'Accepted'}]
+```
 
 ## 9. Operations initiated by Central System
 
