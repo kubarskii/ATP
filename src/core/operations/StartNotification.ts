@@ -1,14 +1,17 @@
 import BaseOperation from "./BaseOperation";
-import {GeneratePayload, Operation} from "../interfaces/operation.interface";
+import {GeneratePayload, Operation} from "../../interfaces/operation.interface";
 import {getGMTTime} from "../../utils/time";
 import {compose} from "../../utils/compose";
 import {BindMethod} from "../../decorators/bindMethod.decorator";
+import {db} from "../../index";
 
 const reqScheme = require('./schemas/StartNotification.json');
 const resScheme = require('./schemas/StartNotificationResponse.json');
 
 export default class StartNotification extends BaseOperation implements Operation, GeneratePayload {
     private response: any = {};
+    private prevTime: any;
+    private interval: any;
 
     constructor(value: any) {
         super(reqScheme, resScheme, value);
@@ -26,19 +29,24 @@ export default class StartNotification extends BaseOperation implements Operatio
 
     @BindMethod
     private async getHeartbeatInterval() {
-        //TODO connect to db and get hbInterval
-        const p = new Promise((res) => {
-            setTimeout(() => {
-                res(60);
-            }, 300)
-        })
-        this.response = {...this.response, interval: await p}
+        const interval = await this.getInterval()
+        this.response = {...this.response, interval: interval}
     }
 
     @BindMethod
     async generatePayload() {
         await compose(this.getStatus, this.getHeartbeatInterval, this.getCurrentTime)();
         return this.response;
+    }
+
+    async getInterval() {
+        if (!this.prevTime || ((this.prevTime - Date.now()) < (60 * 60 * 1000))) {
+            this.prevTime = Date.now()
+            this.interval = await db.get(['/interval']);
+            return this.interval;
+        } else if (this.prevTime && ((this.prevTime - Date.now()) > (60 * 60 * 1000))) {
+            return this.interval
+        }
     }
 
 }

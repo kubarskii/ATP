@@ -8,6 +8,7 @@ import {MessageType} from "../enums/messageType.enum";
 import {Operations} from "./operations";
 import BaseOperation from "./operations/BaseOperation";
 import {getObjectValues} from "../utils/validateAndApplyProperties";
+import {db} from "../index";
 
 export default class Connection {
 
@@ -36,7 +37,7 @@ export default class Connection {
         if (valid) {
             switch (parsedMessage[0]) {
                 case (MessageType.CALL):
-                    const [_, id, operationName, payload]: CallMessage = parsedMessage;
+                    const [type, id, operationName, payload]: CallMessage = parsedMessage;
                     if (!Operations[operationName]) {
                         this.sendErrorMessage([4, id, 'NotSupported', 'Operation is not supported by CS!', {
                             status: 'Rejected',
@@ -47,8 +48,29 @@ export default class Connection {
                     const operation: any = new Operations[operationName](payload);
                     const response = await operation.generatePayload();
                     const validatedResponsePayload = operation.createResponse(response);
-                    console.log(getObjectValues(validatedResponsePayload));
-                    this.ws.send(JSON.stringify([ 3, id, getObjectValues(validatedResponsePayload) ]))
+                    const basePart = {
+                        beacon: this.ws.bcnName,
+                        time: Date.now(),
+                    }
+                    db.create([`/logs/${operationName}`, {
+                        ...basePart,
+                        message: {
+                            type,
+                            id,
+                            operationName,
+                            payload
+                        }
+                    }]);
+                    const res = getObjectValues(validatedResponsePayload);
+                    db.create([`/logs/${operationName}`, {
+                        ...basePart,
+                        message: {
+                            type: 3,
+                            id,
+                            res
+                        }
+                    }]);
+                    this.ws.send(JSON.stringify([3, id, res]))
                     break;
                 default: {
                     console.log('default action');

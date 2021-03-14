@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import Clients from "./Clients";
 import Connection from "./Connection";
+import {SUPPORTED_PROTOCOL} from "../config";
 
 const clients = new Clients();
 
@@ -17,7 +18,7 @@ export default class CentralSystem {
     private options: any | {} = {};
     private readonly port: number = 9001;
     private wss: any | undefined;
-    private ATP_PROTOCOL_VERSION: string = 'atp0.1';
+    private bcnName: string | undefined;
 
     constructor(opts: any) {
         if (opts && Object.keys(opts).length) {
@@ -31,10 +32,10 @@ export default class CentralSystem {
             port: this.port,
             backlog: 100,
             // handleProtocols: (protocols: string | any[], req: any) => {
-            //     if (protocols.indexOf(this.ATP_PROTOCOL_VERSION) === -1) {
+            //     if (protocols.indexOf(SUPPORTED_PROTOCOL) === -1) {
             //         return '';
             //     }
-            //     return this.ATP_PROTOCOL_VERSION;
+            //     return SUPPORTED_PROTOCOL;
             // },
             verifyClient: async (info: { req: { url: any; } }, cb: (arg0: any, arg1: number, arg2: string) => void) => {
                 const isAccept = await validateConnection(info.req.url);
@@ -54,31 +55,27 @@ export default class CentralSystem {
         });
 
         this.wss.on('connection', this.onNewConnection);
-
     }
 
     onNewConnection(ws: any, req: any) {
+        this.bcnName = req.url.replace('/', '');
+        ws.bcnName = this.bcnName;
+        const connection = new Connection(ws, req);
+        const client = new Client(connection);
+
         ws.on('error', (err: any) => {
             console.info(err, ws.readyState);
+        });
+
+        ws.on('close', (err: any) => {
+            clients.deleteClient(client);
         });
 
         if (!ws.protocol) {
             //return ws.close();
         }
 
-        const connection = new Connection(ws, req);
-        const client = new Client(connection);
-
-        ws.on('close', (err: any) => {
-            clients.deleteClient(client);
-        });
-
         clients.addClient(client);
-        setTimeout(() => {
-            console.log(clients);
-            console.log(clients.getClient(connection));
-            ;
-        }, 3000)
     }
 
 }
