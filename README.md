@@ -206,7 +206,7 @@ Response example:
 
 ## 9. Operations initiated by Central System
 
-### 9.1. Beacon Status
+### 9.1. Status
 
 TBD;
 
