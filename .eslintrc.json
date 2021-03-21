@@ -21,7 +21,8 @@
     "import/prefer-default-export": "off",
     "unicorn/no-for-loop": "off",
     "no-case-declarations": "off",
-    "unicorn/no-null": "off"
+    "unicorn/no-null": "off",
+    "class-methods-use-this": "warn"
   },
   "plugins": [
     "@typescript-eslint",

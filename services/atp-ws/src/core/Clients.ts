@@ -1,5 +1,7 @@
-import { Singleton } from '../decorators/singleton.decorator';
-import { BindMethod } from '../decorators/bindMethod.decorator';
+// @ts-ignore
+import { Singleton } from '../../../../lib/decorators/singleton.decorator';
+// @ts-ignore
+import { BindMethod } from '../../../../lib/decorators/bindMethod.decorator';
 
 export interface Client {
   [key: string]: any;

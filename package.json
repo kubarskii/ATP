@@ -1,18 +1,30 @@
 {
   "scripts": {
     "start:atp-ws": "nodemon --watch 'services/atp-ws/**/*.ts' --exec \"ts-node\" services/atp-ws/src/index.ts",
-    "start:em": "",
+    "start:registry": "nodemon --watch 'services/service-registry/**/*.ts' --exec \"ts-node\" services/service-registry/src/index.ts",
+    "start:atp-rest": "nodemon --watch 'services/atp-rest/**/*.ts' --exec \"ts-node\" services/atp-rest/src/index.ts",
     "build": "tsc -p .",
     "eslint": "eslint",
     "prettier": "prettier"
   },
   "dependencies": {
+    "@types/amqplib": "^0.5.17",
+    "@types/express": "^4.17.11",
     "@types/ws": "^7.4.0",
+    "amqplib": "^0.7.1",
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "class-transformer": "^0.3.1",
+    "class-validator": "^0.12.2",
     "dotenv": "^8.2.0",
     "enjoi": "^9.0.0",
+    "express": "^4.17.1",
     "firebase": "^8.2.10",
     "firebase-admin": "^9.5.0",
     "joi": "^17.4.0",
+    "multer": "^1.4.2",
+    "reflect-metadata": "^0.1.13",
+    "routing-controllers": "^0.9.0",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
     "ws": "^7.4.3"

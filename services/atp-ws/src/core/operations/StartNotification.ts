@@ -2,7 +2,7 @@ import BaseOperation from './BaseOperation';
 import { GeneratePayload, Operation } from '../../interfaces/operation.interface';
 import { getGMTTime } from '../../utils/time';
 import { compose } from '../../utils/compose';
-import { BindMethod } from '../../decorators/bindMethod.decorator';
+import { BindMethod } from '../../../../../lib/decorators/bindMethod.decorator';
 import { db as database } from '../../index';
 
 const requestScheme = require('./schemas/StartNotification.json');

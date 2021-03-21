@@ -1,17 +1,11 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 import WebSocket from 'ws';
 import Clients from './Clients';
 import Connection from './Connection';
 import { SUPPORTED_PROTOCOL } from '../config';
+import Client from './Client';
 
 const clients = new Clients();
-
-class Client {
-  private connection: Connection | undefined;
-
-  constructor(connection: Connection) {
-    this.connection = connection;
-  }
-}
 
 export default class CentralSystem {
   private options: any = {};
@@ -28,7 +22,7 @@ export default class CentralSystem {
     }
   }
 
-  listen() {
+  listen(cb?: () => void) {
     const validateConnection = this.options.validateConnection || (() => true);
     this.options = {
       port: this.port,
@@ -41,23 +35,19 @@ export default class CentralSystem {
              }, */
       verifyClient: async (
         info: { req: { url: any } },
-        callback: (
-          argument0: any,
-          argument1: number,
-          argument2: string,
-        ) => void,
+        callback: (argument0: any, argument1: number, argument2: string) => void,
       ) => {
         const isAccept = await validateConnection(info.req.url);
-        callback(
-          isAccept,
-          404,
-          'Central System does not recognize the charge point identifier in the URL path',
-        );
+        callback(isAccept, 404, 'Central System does not recognize the charge point identifier in the URL path');
       },
       clientTracking: true,
       ...this.options,
     };
-    this.wss = new WebSocket.Server(this.options);
+    const defFunction = () => {
+      console.log('WS Server has just started');
+    };
+    const callback = cb || defFunction;
+    this.wss = new WebSocket.Server(this.options, callback);
 
     this.wss.on('error', (ws: any, request: any) => {
       console.info(ws, request);

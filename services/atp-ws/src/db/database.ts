@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as admin from 'firebase-admin';
 
 interface DatabaseService {
@@ -19,7 +18,6 @@ export default class Database implements DatabaseService {
 
   init() {
     admin.initializeApp({
-      // @ts-ignore
       credential: admin.credential.cert(this.config.credential),
       databaseURL: this.config.url,
     });
@@ -37,11 +35,11 @@ export default class Database implements DatabaseService {
   get(arguments_: any): Promise<any> {
     const [referencePath] = arguments_;
     const reference = this.db.ref(referencePath);
-    return new Promise<any>(res => {
+    return new Promise<any>(response => {
       reference.on(
         'value',
         (snapshot: any) => {
-          res(snapshot.val());
+          response(snapshot.val());
         },
         (errorObject: any) => {
           console.log(`The read failed: ${errorObject.code}`);
