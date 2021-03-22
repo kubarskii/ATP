@@ -1,20 +1,47 @@
 {
   "scripts": {
-    "start": "npm run build:live",
+    "start:atp-ws": "nodemon --watch 'services/atp-ws/**/*.ts' --exec \"ts-node\" services/atp-ws/src/index.ts",
+    "start:registry": "nodemon --watch 'services/service-registry/**/*.ts' --exec \"ts-node\" services/service-registry/src/index.ts",
+    "start:atp-rest": "nodemon --watch 'services/atp-rest/**/*.ts' --exec \"ts-node\" services/atp-rest/src/index.ts",
     "build": "tsc -p .",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/index.ts"
+    "eslint": "eslint --fix",
+    "prettier": "prettier"
   },
   "dependencies": {
+    "@types/amqplib": "^0.5.17",
+    "@types/express": "^4.17.11",
     "@types/ws": "^7.4.0",
+    "amqplib": "^0.7.1",
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "class-transformer": "^0.3.1",
+    "class-validator": "^0.12.2",
+    "dotenv": "^8.2.0",
     "enjoi": "^9.0.0",
+    "express": "^4.17.1",
+    "firebase": "^8.2.10",
+    "firebase-admin": "^9.5.0",
     "joi": "^17.4.0",
+    "multer": "^1.4.2",
+    "reflect-metadata": "^0.1.13",
+    "routing-controllers": "^0.9.0",
+    "uuid": "^8.3.2",
     "winston": "^3.3.3",
     "ws": "^7.4.3"
   },
   "devDependencies": {
     "@types/node": "^14.14.31",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb-typescript": "^12.3.1",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-unicorn": "^28.0.2",
     "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.2"
+    "typescript": "^4.2.3"
   }
 }

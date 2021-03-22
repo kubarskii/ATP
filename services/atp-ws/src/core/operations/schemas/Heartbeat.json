@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "HeartbeatRequest",
+  "type": "object",
+  "properties": {
+    "speed": {
+      "type": "number",
+      "maxLength": 3
+    },
+    "systemOfMeasures": {
+      "type": "string",
+      "enum": [
+        "km",
+        "m"
+      ]
+    },
+    "position": {
+      "items": [
+        {
+          "type": "string",
+          "maxLength": 20
+        },
+        {
+          "type": "string",
+          "maxLength": 20
+        }
+      ]
+    },
+    "previousPosition": {
+      "items": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "noSpeed": {
+      "type": "boolean"
+    },
+    "currentTime": {
+      "type": "string",
+      "format": "date-time",
+      "formatMinimum": "1970-01-01T00:00:00.000"
+    },
+    "previousTime": {
+      "type": "string",
+      "format": "date-time",
+      "formatMinimum": "1970-01-01T00:00:00.000"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "systemOfMeasures",
+    "position",
+    "previousPosition",
+    "currentTime",
+    "previousTime"
+  ]
+}

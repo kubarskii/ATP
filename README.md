@@ -1,4 +1,27 @@
-# ATP (Auto tracker protocol)
+# Starting the project
+
+Prerequisites:
+
+Node.js and npm should be installed.
+
+To start the project:
+
+- run in terminal `npm i` to install dependencies;
+- add `.env` file to the project root;
+    - add all env variables to the `.env`. Currently it is used to connect to the *Firebase*;
+- run `npm run start` to start sever locally;
+
+# Schemas
+
+Schemas are used to verify requests and responses produced by client/server and adhere AT-protocol. Schemas can be found
+in:
+`src/core/operations/schemas`
+
+# Emulator
+
+TBD;
+
+# ATP (Auto tracker protocol) description
 
 ## 1. Scope
 
@@ -137,10 +160,11 @@ Bcn example:
 ```javascript
 [2, id, 'Heartbeat', {
     speed: '',
-    position: ['', ''], // latitude and longitude
-    noSpeed: false,     // default,
-    currentTime: '',           // GMT time ISOString
+    position: ['', ''],   // latitude and longitude
+    noSpeed: false,       // default,
+    currentTime: '',      // GMT time ISOString
     previousTime: '',
+    previousPosition: '',
     systemOfMeasures: '',
 }]
 ```
@@ -155,9 +179,34 @@ CS example:
 
 Another function of the heartbeat is to check whether the connection is still alive or not.
 
+### 8.3. EmergencyNotification
+
+This request is intended to be used in emergency situations. It can be used if an accident or similar happened.
+
+Possible situations:
+
+- Accident
+- Speed limits noncompliance
+- Fuel leak
+
+Request example:
+
+```javascript
+[2, id, 'EmergencyNotification', {
+    type: 'Accident',
+    data: {} // any data
+}] 
+```
+
+Response example:
+
+```javascript
+[3, id, {status: 'Accepted'}]
+```
+
 ## 9. Operations initiated by Central System
 
-### 9.1. Vehicle Status
+### 9.1. Status
 
 TBD;
 
@@ -166,11 +215,31 @@ speed, mileage, ignition off/on, fuel left, etc.
 
 ### 9.2. Reset
 
-TBD;
+The operation is intended to be used to reset the bcn if something goes wrong. The reset can be *hard* or *soft*.
+
+- Hard reset - reset without saving current session, closing ws connection properly.
+- Soft reset - close ws connection, save current session and reload. Reset type: Hard, Soft
+
+Request example:
+
+```javascript
+[2, id, 'Reset', {type: 'soft'}]
+```
+
+Response example:
+
+```javascript
+[3, id, {status: 'Accespted'}]
+```
 
 ## 10. Sequence of the beacon initialization
 
-TBD; // Add sequence diagram
+TBD; // Add sequence diagram image
+
+- Create StartNotifcation
+    - server response with status, time and interval
+- Start heartbeat by interval with payload
+    - server response with status
 
 ## 11. Errors
 
