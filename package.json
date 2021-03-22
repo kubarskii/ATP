@@ -4,7 +4,7 @@
     "start:registry": "nodemon --watch 'services/service-registry/**/*.ts' --exec \"ts-node\" services/service-registry/src/index.ts",
     "start:atp-rest": "nodemon --watch 'services/atp-rest/**/*.ts' --exec \"ts-node\" services/atp-rest/src/index.ts",
     "build": "tsc -p .",
-    "eslint": "eslint",
+    "eslint": "eslint --fix",
     "prettier": "prettier"
   },
   "dependencies": {
@@ -42,6 +42,6 @@
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.2"
+    "typescript": "^4.2.3"
   }
 }

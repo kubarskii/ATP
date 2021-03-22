@@ -5,11 +5,11 @@ const amqpClient = require('../services/amqpClient.service');
 
 @Controller('/client')
 export class BeaconsController {
-  private channel: any;
+  private channel: any = null;
 
   @Post('/:name')
   async callWSServer(@Body() body: any, @Param('name') name: string) {
-    if (!this.channel) {
+    if (this.channel === null) {
       this.channel = await amqpClient.createClient({ url: 'amqp://localhost' });
     }
     this.channel.responseEmitter.on('event', () => {});

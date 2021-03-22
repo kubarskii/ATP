@@ -4,7 +4,7 @@ import { MessageType } from '../enums/messageType.enum';
 import { Operations } from './operations';
 import BaseOperation from './operations/BaseOperation';
 import { getObjectValues } from '../utils/validateAndApplyProperties';
-import { db as database } from '../index';
+import { databaseInstance as database } from '../index';
 
 export default class Connection {
   private ws: any | undefined;
