@@ -3,7 +3,6 @@ import { GeneratePayload, Operation } from '../../interfaces/operation.interface
 import { getGMTTime } from '../../utils/time';
 import { compose } from '../../utils/compose';
 import { BindMethod } from '../../../../../lib/decorators/bindMethod.decorator';
-import { databaseInstance as database } from '../../index';
 
 const requestScheme = require('./schemas/StartNotification.json');
 const responseScheme = require('./schemas/StartNotificationResponse.json');
@@ -46,7 +45,7 @@ export default class StartNotification extends BaseOperation implements Operatio
   private async getInterval(): Promise<any> {
     if (!this.prevTime || this.prevTime - Date.now() < 60 * 60 * 1000) {
       this.prevTime = Date.now();
-      this.interval = await database.get(['/interval']);
+      this.interval = 60 * 1000;
       return this.interval;
     }
     if (this.prevTime && this.prevTime - Date.now() > 60 * 60 * 1000) {

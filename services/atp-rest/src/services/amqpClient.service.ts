@@ -1,19 +1,18 @@
 import { Channel, connect } from 'amqplib';
 import EventEmitter from 'events';
 import { v4 } from 'uuid';
+import { REPLY_QUEUE } from '../constants';
 
 interface CustomChannel extends Channel {
   responseEmitter?: EventEmitter;
   correlationId?: string;
 }
 
-const REPLY_QUEUE = 'ATP-REST';
-
-const createClient = async (setting?: any) => {
+export const createClient = async (setting?: any) => {
   const connection = await connect('amqp://localhost');
   const channel: CustomChannel = await connection.createChannel();
   // creating queue if no one exists
-  await channel.assertQueue('ATP-REST');
+  await channel.assertQueue(REPLY_QUEUE);
   channel.responseEmitter = new EventEmitter();
   channel.responseEmitter.setMaxListeners(0);
   await channel.consume(
@@ -36,7 +35,7 @@ const createClient = async (setting?: any) => {
   return channel;
 };
 
-const sendRPCMessage = (channel: any, message: any, rpcQueue: string) => {
+export const sendRPCMessage = (channel: any, message: any, rpcQueue: string): Promise<any> => {
   return new Promise(resolve => {
     const correlationId = v4();
     channel.responseEmitter.once(`${correlationId}`, resolve);
@@ -44,6 +43,3 @@ const sendRPCMessage = (channel: any, message: any, rpcQueue: string) => {
     channel.sendToQueue(rpcQueue, Buffer.from(message, 'utf-8'), { replyTo: REPLY_QUEUE });
   });
 };
-
-module.exports.createClient = createClient;
-module.exports.sendRPCMessage = sendRPCMessage;

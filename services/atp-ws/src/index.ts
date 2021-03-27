@@ -7,13 +7,7 @@
 
 import axios from 'axios';
 import { connect } from 'amqplib';
-import { v4 as uuidv4 } from 'uuid';
-import CentralSystem from './core/CentralSystem';
-import Database from './db/database';
-import { db as databaseConfig } from './config';
-
-export const databaseInstance = new Database(databaseConfig);
-databaseInstance.init();
+import CentralSystem, { clients } from './core/CentralSystem';
 
 const registerService = async () => {
   const response: any = await axios.put('http://localhost:3090/register/atp-ws/1.0.0/9001').catch(error => {
@@ -34,20 +28,21 @@ setInterval(registerService, 30 * 1000);
 const centralSystem = new CentralSystem({
   validateConnection: async (url: any) => {
     const urlCleared = url.replace('/', '');
-    const bcn = await databaseInstance.get(['/beacons']);
-    return !!bcn[urlCleared];
+    return true;
   },
 });
 
-centralSystem.listen(registerService);
+centralSystem.listen(() => {
+  console.log('WS Server started on port 9001');
+});
 
-const q = 'atp-service';
+const queue = 'atp-service';
 
 connect('amqp://localhost')
   .then(conn => conn.createChannel())
   .then((channel: any) =>
-    channel.assertQueue(q).then(() =>
-      channel.consume(q, async (message: any) => {
+    channel.assertQueue(queue).then(() =>
+      channel.consume(queue, async (message: any) => {
         if (message !== null) {
           let qm;
           try {
@@ -66,6 +61,7 @@ connect('amqp://localhost')
   });
 
 async function processQueueMessage(qm: any) {
+  console.log(clients);
   const connection = await connect('amqp://localhost');
   const channel = await connection.createChannel();
   await channel.assertQueue('ATP-REST');

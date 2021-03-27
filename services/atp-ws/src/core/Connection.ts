@@ -4,7 +4,6 @@ import { MessageType } from '../enums/messageType.enum';
 import { Operations } from './operations';
 import BaseOperation from './operations/BaseOperation';
 import { getObjectValues } from '../utils/validateAndApplyProperties';
-import { databaseInstance as database } from '../index';
 
 export default class Connection {
   private ws: any | undefined;
@@ -32,81 +31,55 @@ export default class Connection {
 
   async onMessage(message: string) {
     const parsedMessage: CallMessage | CallResultMessage | ErrorMessage = JSON.parse(message);
-    const valid: boolean = validateParsedMessage(parsedMessage);
-    if (valid) {
-      switch (parsedMessage[0]) {
-        case MessageType.CALL:
-          {
-            const [type, id, operationName, payload] = parsedMessage;
-            if (typeof operationName === 'string' && !Operations[operationName]) {
-              this.sendErrorMessage([
-                4,
-                id,
-                'NotSupported',
-                'Operation is not supported by CS!',
-                {
-                  status: 'Rejected',
-                  initialRequest: message,
-                },
-              ]);
-              break;
-            }
-            const operation: any = typeof operationName === 'string' ? new Operations[operationName](payload) : null;
-            if (!operation) {
-              throw new Error('operationName is not a string');
-            }
-            const response = await operation.generatePayload();
-            const validatedResponsePayload = operation.createResponse(response);
-            const basePart = {
-              beacon: this.ws.bcnName,
-              time: Date.now(),
-            };
-            database.create([
-              `/logs/${operationName}`,
-              {
-                ...basePart,
-                message: {
-                  type,
-                  id,
-                  operationName,
-                  payload,
-                },
-              },
-            ]);
-            const res = getObjectValues(validatedResponsePayload);
-            database.create([
-              `/logs/${operationName}`,
-              {
-                ...basePart,
-                message: {
-                  type: 3,
-                  id,
-                  res,
-                },
-              },
-            ]);
-            this.ws.send(JSON.stringify([3, id, res]));
-          }
+    const [type, id, actionNameOrPayloadOrErrorCode, payloadOrErrorDescription, errorDetails] = parsedMessage;
+    console.log(type);
+    switch (type) {
+      case MessageType.CALL:
+        if (typeof actionNameOrPayloadOrErrorCode === 'string' && !Operations[actionNameOrPayloadOrErrorCode]) {
+          this.sendErrorMessage([
+            4,
+            id,
+            'NotSupported',
+            'Operation is not supported by CS!',
+            {
+              status: 'Rejected',
+              initialRequest: message,
+            },
+          ]);
           break;
-        case MessageType.CALL_RESULT:
-          // TODO find if the request was made
-          // process the response: write to db, delete from response list
-          {
-            const [type, id, payload] = parsedMessage;
-            if (this.requests[id]) {
-              delete this.requests[id];
-            }
-          }
-          break;
-        case MessageType.ERROR:
-          // if error throw exception
-          break;
-        default: {
-          console.log('default action');
         }
+        const operation: any =
+          typeof actionNameOrPayloadOrErrorCode === 'string'
+            ? new Operations[actionNameOrPayloadOrErrorCode](payloadOrErrorDescription)
+            : null;
+        console.log(operation);
+        if (!operation) {
+          throw new Error('operationName is not a string');
+        }
+        const response = await operation.generatePayload();
+        const validatedResponsePayload = operation.createResponse(response);
+        const basePart = {
+          beacon: this.ws.bcnName,
+          time: Date.now(),
+        };
+        const res = getObjectValues(validatedResponsePayload);
+
+        this.ws.send(JSON.stringify([3, id, res]));
+        break;
+      case MessageType.CALL_RESULT:
+        // TODO find if the request was made
+        // process the response: write to db, delete from response list
+        if (this.requests[id]) {
+          delete this.requests[id];
+        }
+
+        break;
+      case MessageType.ERROR:
+        // if error throw exception
+        break;
+      default: {
+        console.log('default action');
       }
-    } else {
-      throw new Error('The message sent is not valid!');
     }
   }
 
