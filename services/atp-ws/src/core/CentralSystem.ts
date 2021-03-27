@@ -5,7 +5,11 @@ import Connection from './Connection';
 import { SUPPORTED_PROTOCOL } from '../config';
 import Client from './Client';
 
-const clients = new Clients();
+export const clients = new Clients();
+
+const defFunction = () => {
+  console.log('WS Server has just started');
+};
 
 export default class CentralSystem {
   private options: any = {};
@@ -43,11 +47,12 @@ export default class CentralSystem {
       clientTracking: true,
       ...this.options,
     };
-    const defFunction = () => {
-      console.log('WS Server has just started');
-    };
+
     const callback = cb || defFunction;
     this.wss = new WebSocket.Server(this.options, callback);
+    this.wss.on('start', () => {
+      console.log('started');
+    });
 
     this.wss.on('error', (ws: any, request: any) => {
       console.info(ws, request);
