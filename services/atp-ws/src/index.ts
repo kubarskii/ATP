@@ -7,13 +7,7 @@
 
 import axios from 'axios';
 import { connect } from 'amqplib';
-import { v4 as uuidv4 } from 'uuid';
-import CentralSystem from './core/CentralSystem';
-import Database from './db/database';
-import { db as databaseConfig } from './config';
-
-export const db = new Database(databaseConfig);
-db.init();
+import CentralSystem, { clients } from './core/CentralSystem';
 
 const registerService = async () => {
   const response: any = await axios.put('http://localhost:3090/register/atp-ws/1.0.0/9001').catch(error => {
@@ -34,24 +28,30 @@ setInterval(registerService, 30 * 1000);
 const centralSystem = new CentralSystem({
   validateConnection: async (url: any) => {
     const urlCleared = url.replace('/', '');
-    const bcn = await db.get(['/beacons']);
-    return !!bcn[urlCleared];
+    return true;
   },
 });
 
-centralSystem.listen(registerService);
+centralSystem.listen(() => {
+  console.log('WS Server started on port 9001');
+});
 
-const q = 'atp-service';
+const queue = 'atp-service';
 
 connect('amqp://localhost')
   .then(conn => conn.createChannel())
-  .then(ch =>
-    ch.assertQueue(q).then(() =>
-      ch.consume(q, async message => {
+  .then((channel: any) =>
+    channel.assertQueue(queue).then(() =>
+      channel.consume(queue, async (message: any) => {
         if (message !== null) {
-          const qm = JSON.parse(message.content.toString());
+          let qm;
+          try {
+            qm = JSON.parse(message.content.toString());
+          } catch (error) {
+            console.log(error);
+          }
           await processQueueMessage(qm);
-          ch.ack(message);
+          channel.ack(message);
         }
       }),
     ),
@@ -61,9 +61,10 @@ connect('amqp://localhost')
   });
 
 async function processQueueMessage(qm: any) {
+  console.log(clients);
   const connection = await connect('amqp://localhost');
   const channel = await connection.createChannel();
   await channel.assertQueue('ATP-REST');
-  const message = JSON.stringify(['ATP-WS', { payload: 'Ha-Ha-Ha' }]);
+  const message = JSON.stringify({ status: 'Accepted' });
   return channel.sendToQueue('ATP-REST', Buffer.from(message, 'utf-8'));
 }
