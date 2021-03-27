@@ -45,7 +45,7 @@ export default class StartNotification extends BaseOperation implements Operatio
   private async getInterval(): Promise<any> {
     if (!this.prevTime || this.prevTime - Date.now() < 60 * 60 * 1000) {
       this.prevTime = Date.now();
-      this.interval = 60 * 1000;
+      this.interval = 14 * 1000;
       return this.interval;
     }
     if (this.prevTime && this.prevTime - Date.now() > 60 * 60 * 1000) {

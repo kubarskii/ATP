@@ -1,0 +1,19 @@
+.logs .row:nth-child(odd) {
+    background-color: #f5f6ff;
+}
+
+.row {
+    border-bottom: 1px solid #ccc;
+}
+
+.call {
+    background-color: aliceblue;
+}
+
+.call_result {
+    background-color: lightgreen;
+}
+
+.error {
+    background-color: crimson;
+}

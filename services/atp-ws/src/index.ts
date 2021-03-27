@@ -10,7 +10,7 @@ import { connect } from 'amqplib';
 import CentralSystem, { clients } from './core/CentralSystem';
 
 const registerService = async () => {
-  const response: any = await axios.put('http://localhost:3090/register/atp-ws/1.0.0/9001').catch(error => {
+  const response: any = await axios.put('http://localhost:3090/register/atp-ws/1.0.0/9001').catch((error) => {
     console.log(error);
   });
   return response?.data;
@@ -18,7 +18,7 @@ const registerService = async () => {
 
 // TODO unregister on process error
 const unregisterService = async () => {
-  await axios.delete(`http://localhost:3090/register/atp-ws/1.0.0/9001`).catch((error: any) => {
+  await axios.delete('http://localhost:3090/register/atp-ws/1.0.0/9001').catch((error: any) => {
     console.error(error);
   });
 };
@@ -39,29 +39,24 @@ centralSystem.listen(() => {
 const queue = 'atp-service';
 
 connect('amqp://localhost')
-  .then(conn => conn.createChannel())
-  .then((channel: any) =>
-    channel.assertQueue(queue).then(() =>
-      channel.consume(queue, async (message: any) => {
-        if (message !== null) {
-          let qm;
-          try {
-            qm = JSON.parse(message.content.toString());
-          } catch (error) {
-            console.log(error);
-          }
-          await processQueueMessage(qm);
-          channel.ack(message);
-        }
-      }),
-    ),
-  )
-  .catch(error => {
+  .then((conn) => conn.createChannel())
+  .then((channel: any) => channel.assertQueue(queue).then(() => channel.consume(queue, async (message: any) => {
+    if (message !== null) {
+      let qm;
+      try {
+        qm = JSON.parse(message.content.toString());
+      } catch (error) {
+        console.log(error);
+      }
+      await processQueueMessage(qm);
+      channel.ack(message);
+    }
+  })))
+  .catch((error) => {
     console.log(error);
   });
 
 async function processQueueMessage(qm: any) {
-  console.log(clients);
   const connection = await connect('amqp://localhost');
   const channel = await connection.createChannel();
   await channel.assertQueue('ATP-REST');

@@ -5,8 +5,8 @@ import { BindMethod } from '../../../../../lib/decorators/bindMethod.decorator';
 import { getGMTTime } from '../../utils/time';
 import { calculateSpeed } from '../../utils/speed';
 
-const responseScheme = {};
-const requestScheme = {};
+const responseScheme = require('./schemas/HeartbeatResponse.json');
+const requestScheme = require('./schemas/Heartbeat.json');
 
 export default class Heartbeat extends BaseOperation implements Operation, GeneratePayload {
   private response = {};
@@ -22,7 +22,12 @@ export default class Heartbeat extends BaseOperation implements Operation, Gener
   @BindMethod
   private checkSpeed() {
     if (!this.value.speed) {
-      const { position, previousPosition, currentTime, previousTime } = this.value;
+      const {
+        position,
+        previousPosition,
+        currentTime,
+        previousTime,
+      } = this.value;
       this.value.speed = calculateSpeed(
         new Date(previousTime).getTime(),
         position[0],
@@ -36,12 +41,18 @@ export default class Heartbeat extends BaseOperation implements Operation, Gener
 
   @BindMethod
   private getStatus() {
-    this.response = { ...this.response, status: 'Accepted' };
+    this.response = {
+      ...this.response,
+      status: 'Accepted',
+    };
   }
 
   @BindMethod
   private getCurrentTime() {
-    this.response = { ...this.response, currentTime: getGMTTime() };
+    this.response = {
+      ...this.response,
+      currentTime: getGMTTime(),
+    };
   }
 
   @BindMethod

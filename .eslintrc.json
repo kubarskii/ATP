@@ -32,10 +32,7 @@
   ],
   "extends": [
     "airbnb-typescript/base",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:unicorn/recommended",
-    "plugin:prettier/recommended",
-    "prettier"
+    "plugin:@typescript-eslint/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": 2020,
