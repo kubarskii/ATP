@@ -1,7 +1,10 @@
 export default class Client {
-  private connection: any | undefined;
+  public connection: any | undefined;
 
-  constructor(connection: any) {
+  public name: string | undefined;
+
+  constructor(connection: any, name: string) {
     this.connection = connection;
+    this.name = name;
   }
 }

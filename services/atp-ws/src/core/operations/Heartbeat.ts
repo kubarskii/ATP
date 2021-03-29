@@ -1,9 +1,9 @@
 import BaseOperation from './BaseOperation';
 import { GeneratePayload, Operation } from '../../interfaces/operation.interface';
 import { compose } from '../../utils/compose';
-import { BindMethod } from '../../../../../lib/decorators/bindMethod.decorator';
 import { getGMTTime } from '../../utils/time';
 import { calculateSpeed } from '../../utils/speed';
+import { BindMethod } from '../../decorators/bindMethod.decorator';
 
 const responseScheme = require('./schemas/HeartbeatResponse.json');
 const requestScheme = require('./schemas/Heartbeat.json');

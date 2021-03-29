@@ -1,4 +1,4 @@
-export function BindMethod(target: any, key: string, descriptor: any) {
+export function BindMethod(target: any, key: string, descriptor: PropertyDescriptor) {
   let $function = descriptor.value;
 
   let definingProperty = false;
@@ -7,10 +7,10 @@ export function BindMethod(target: any, key: string, descriptor: any) {
     configurable: true,
     get() {
       if (
-        definingProperty ||
-        this === target.prototype ||
-        this.hasOwnProperty(key) ||
-        typeof $function !== 'function'
+        definingProperty
+        || this === target.prototype
+        || this.hasOwnProperty(key)
+        || typeof $function !== 'function'
       ) {
         return $function;
       }

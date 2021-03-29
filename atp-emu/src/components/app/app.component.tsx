@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "../../index";
 import { v4 as uuidv4 } from "uuid";
 import Logs from "../logs/logs.component";
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { addLogs } from "../../store/logs/logs.actions";
 import { AtpMessage, MessageType } from "../../types";
+import { sendRequest } from "../../store/beacon/beacon.actions";
 
 let prevAction: null | { action: string, id: string } = null;
 const setPrevAction: any = (data: { action: string, id: string }) => {
@@ -18,7 +19,7 @@ const setCanMakeRequest: any = (value: boolean) => {
 
 let prevTime: string | undefined;
 
-function AppComponent() {
+function AppComponent(props: any) {
   const ws: WebSocket = useContext(WebSocketContext);
   const dispatch = useDispatch();
 
@@ -109,9 +110,13 @@ function AppComponent() {
   return (
     <div className="App">
       <button onClick={sendStart}>Send StartNotification</button>
+      <button onClick={() => props.sendRequest("Status")}>Ask Beacon for status</button>
       <Logs />
     </div>
   );
 }
 
-export default AppComponent;
+const mapStateToProps = (state: any) => ({
+  beacon: state.beacon
+});
+export default connect(mapStateToProps, { sendRequest })(AppComponent);

@@ -31,12 +31,12 @@ export default class CentralSystem {
     this.options = {
       port: this.port,
       backlog: 100,
-      /* handleProtocols: (protocols: string | any[], req: any) => {
-                 if (protocols.indexOf(SUPPORTED_PROTOCOL) === -1) {
-                     return '';
-                 }
-                 return SUPPORTED_PROTOCOL;
-             }, */
+      handleProtocols: (protocols: string | any[], req: any) => {
+        if (protocols.indexOf(SUPPORTED_PROTOCOL) === -1) {
+          return '';
+        }
+        return SUPPORTED_PROTOCOL;
+      },
       verifyClient: async (
         info: { req: { url: any } },
         callback: (argument0: any, argument1: number, argument2: string) => void,
@@ -65,24 +65,30 @@ export default class CentralSystem {
     this.wss.on('connection', this.onNewConnection);
   }
 
-  onNewConnection(ws: any, request: any): void {
+  onNewConnection(ws: any, request: any): boolean {
     this.bcnName = request.url.replace('/', '');
-    ws.bcnName = this.bcnName;
     const connection = new Connection(ws, request);
-    const client = new Client(connection);
+    if (this.bcnName) {
+      const client = new Client(connection, this.bcnName);
 
-    ws.on('error', (error: any) => {
-      console.info(error, ws.readyState);
-    });
+      ws.on('error', (error: any) => {
+        console.info(error, ws.readyState);
+      });
 
-    ws.on('close', (error: any) => {
-      clients.deleteClient(client);
-    });
+      ws.on('close', (error: any) => {
+        // @ts-ignore
+        clients.deleteClient(client);
+      });
 
-    if (!ws.protocol) {
-      // return ws.close();
+      if (!ws.protocol) {
+        return ws.close();
+      }
+
+      // @ts-ignore
+      clients.addClient(client);
+    } else {
+      throw new Error('Beacon name is not specified');
     }
-
-    clients.addClient(client);
+    return true;
   }
 }

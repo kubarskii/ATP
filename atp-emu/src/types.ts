@@ -31,3 +31,8 @@ export type Log = {
 export type Logs = {
   items: Log[]
 }
+
+export type Action = {
+  type: string;
+  payload: any;
+}
