@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
+import Logs from "../../components/logs/logs.component";
 import { WebSocketContext } from "../../index";
-import { v4 as uuidv4 } from "uuid";
-import Logs from "../logs/logs.component";
 import { connect, useDispatch } from "react-redux";
-import { addLogs } from "../../store/logs/logs.actions";
 import { AtpMessage, MessageType } from "../../types";
+import { addLogs } from "../../store/logs/logs.actions";
+import { v4 as uuidv4 } from "uuid";
 import { sendRequest } from "../../store/beacon/beacon.actions";
+import { withRouter } from "react-router";
 
 let prevAction: null | { action: string, id: string } = null;
 const setPrevAction: any = (data: { action: string, id: string }) => {
@@ -19,7 +20,7 @@ const setCanMakeRequest: any = (value: boolean) => {
 
 let prevTime: string | undefined;
 
-function AppComponent(props: any) {
+function Home(props: any) {
   const ws: WebSocket = useContext(WebSocketContext);
   const dispatch = useDispatch();
 
@@ -36,15 +37,20 @@ function AppComponent(props: any) {
     }
   };
 
+  const fn = (messsage: any) => {
+    const parsedMessage = JSON.parse(messsage.data);
+    processMessage(parsedMessage);
+    dispatch(addLogs({
+      type: MessageType[parsedMessage[0]],
+      message: parsedMessage
+    }));
+  };
+
   useEffect(() => {
-    ws.addEventListener("message", (messsage: any) => {
-      const parsedMessage = JSON.parse(messsage.data);
-      processMessage(parsedMessage);
-      dispatch(addLogs({
-        type: MessageType[parsedMessage[0]],
-        message: parsedMessage
-      }));
-    });
+    ws.addEventListener("message", fn);
+    return () => {
+      ws.removeEventListener("message", fn);
+    };
   }, []);
 
   const sendStart = () => {
@@ -119,4 +125,4 @@ function AppComponent(props: any) {
 const mapStateToProps = (state: any) => ({
   beacon: state.beacon
 });
-export default connect(mapStateToProps, { sendRequest })(AppComponent);
+export default withRouter(connect(mapStateToProps, { sendRequest })(Home));

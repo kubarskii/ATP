@@ -111,23 +111,27 @@ time to calculate speed more accurately.
 
 ```javascript
 [2, id, "StartNotification",
-    {
-        beaconSerialNumber: "",
-        imsi: "",
-        iccid: "",
-        firmwareVersion: "",
-        vehicleVIN: "",          // optional
-        vehicleLicensePlate: "", // optional
-        vehicleBrand: "",        // optional 
-        vehicleModel: "",        // optional
-    }
+  {
+    beaconSerialNumber: "",
+    imsi: "",
+    iccid: "",
+    firmwareVersion: "",
+    vehicleVIN: "",          // optional
+    vehicleLicensePlate: "", // optional
+    vehicleBrand: "",        // optional 
+    vehicleModel: "",        // optional
+  }
 ]
 ```
 
 ***Central System*** Response example
 
 ```javascript
-[3, id, {status: 'Accepted', currentTime: '', interval: ''}]
+[3, id, {
+  status: 'Accepted',
+  currentTime: '',
+  interval: ''
+}]
 ```
 
 #### Possible Statuses
@@ -143,7 +147,11 @@ If error occurs:
 ***Central System*** Response example:
 
 ```javascript
-[4, id, '', '', {status: 'Error', code: '', message: ''}]
+[4, id, '', '', {
+  status: 'Error',
+  code: '',
+  message: ''
+}]
 ```
 
 ### 8.2. Heartbeat
@@ -159,13 +167,13 @@ Bcn example:
 
 ```javascript
 [2, id, 'Heartbeat', {
-    speed: '',
-    position: ['', ''],   // latitude and longitude
-    noSpeed: false,       // default,
-    currentTime: '',      // GMT time ISOString
-    previousTime: '',
-    previousPosition: '',
-    systemOfMeasures: '',
+  speed: '',
+  position: ['', ''],   // latitude and longitude
+  noSpeed: false,       // default,
+  currentTime: '',      // GMT time ISOString
+  previousTime: '',
+  previousPosition: '',
+  systemOfMeasures: '',
 }]
 ```
 
@@ -174,7 +182,10 @@ CS should reply to the request sending `currentTime` in response payload.
 CS example:
 
 ```javascript
-[3, id, {currentTime: '', status: 'Accepted'}]
+[3, id, {
+  currentTime: '',
+  status: 'Accepted'
+}]
 ```
 
 Another function of the heartbeat is to check whether the connection is still alive or not.
@@ -193,25 +204,31 @@ Request example:
 
 ```javascript
 [2, id, 'EmergencyNotification', {
-    type: 'Accident',
-    data: {} // any data
+  type: 'Accident',
+  data: {} // any data
 }] 
 ```
 
 Response example:
 
 ```javascript
-[3, id, {status: 'Accepted'}]
+[3, id, { status: 'Accepted' }]
 ```
+
+### 8.4. PowerOffNotification
+
+This action is used to notify CS, that the beacon is switching of. After CS receives this action it should close the
+connection with the beacon. This is the only one operation that will not return response to the beacon. The reason for
+that is that beacon can be not available at the time t is suppose to reveice response.
 
 ## 9. Operations initiated by Central System
 
-### 9.1. Status
+### 9.1. BeaconStatus
 
 TBD;
 
-This operation is intended to ask Bcn to send ***vehicle status***. The data that could be provided by a beacon: current
-speed, mileage, ignition off/on, fuel left, etc.
+This operation is intended to ask Bcn to send ***beacon status***. The data that could be provided by a beacon: current
+speed, mileage, ignition off/on, fuel left, number of satellites, signal power.
 
 ### 9.2. Reset
 
@@ -223,13 +240,13 @@ The operation is intended to be used to reset the bcn if something goes wrong. T
 Request example:
 
 ```javascript
-[2, id, 'Reset', {type: 'soft'}]
+[2, id, 'Reset', { type: 'soft' }]
 ```
 
 Response example:
 
 ```javascript
-[3, id, {status: 'Accespted'}]
+[3, id, { status: 'Accespted' }]
 ```
 
 ## 10. Sequence of the beacon initialization
